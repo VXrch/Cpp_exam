@@ -1,13 +1,40 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <filesystem>
 #include <Windows.h>
 #include <Shellapi.h>
 #include "NOVEL.h"
 
 using namespace std;
 
+// OTHER
+bool Novel::ChapterNameCheck(string chapter, string title)
+{
+	string path = "RanobeLib\\" + title;
+
+	ifstream file;
+	file.open(path);
+	if (!file)
+	{
+		cout << "Invalid directory: " << path << endl;
+		return false;
+	}
+
+	string filename;
+	while (getline(file, filename))
+	{
+		if (filename.substr(0, filename.find_last_of('.')) == chapter && filename.substr(filename.find_last_of('.') + 1) == "txt")
+		{
+			cout << "Chapter: " << filename.substr(0, filename.find_last_of('.')) << endl;
+			file.close();
+			return true;
+		}
+	}
+
+	cout << "Wrong chapter name!" << endl;
+	file.close();
+	return false;
+}
 
 // Novel work
 void Novel::NewNovel()
@@ -146,7 +173,27 @@ void Novel::RewriteInfo(Novel& novel)
 		}
 	}
 }
+void Novel::RedacrChapter(Novel novel, string chapter)
+{
+	string path = "RanobeLib\\" + novel.title + chapter + ".txt";
+	
+	ifstream file(path);
+	if (!file)
+	{
+		cout << "File not found: " << path << endl;
+		return;
+	}
+	file.close();
 
+	wstring wpath(path.begin(), path.end());
+	LPCWSTR filePath = wpath.c_str();
+
+	HINSTANCE result = ShellExecuteW(nullptr, L"open", L"notepad.exe", filePath, nullptr, SW_SHOW);
+	if ((int)result <= 32)
+	{
+		cout << "Failed to open file in Notepad." << endl;
+	}
+}
 
 // Prints
 void Novel::Print()
@@ -168,6 +215,37 @@ void Novel::GenresPrint()
 		<< "[8] - Game" << "\t\t" << "[18] - Psychological" << "\t" << "[28] - Supernatural" << endl
 		<< "[9] - GenderBend" << "\t" << "[19] - Romance" << "\t\t" << "[29] - Smut" << endl
 		<< "[10] - Harem" << "\t\t" << "[20] - SchoolLife" << "\t" << "[30] - Trageby" << endl;
+}
+void Novel::ChaptersPrint(string title)
+{
+	string path = "RanobeLib\\" + title;
+
+	WIN32_FIND_DATAA findData;
+	HANDLE hFind = FindFirstFileA((path + "\\*").c_str(), &findData);
+
+	if (hFind == INVALID_HANDLE_VALUE)
+	{
+		cout << "Invalid directory: " << path << endl;
+		return;
+	}
+	do
+	{
+		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			// Continue!
+		}
+		else
+		{
+			string filename = findData.cFileName;
+			string extension = filename.substr(filename.find_last_of('.') + 1);
+			if (extension == "txt")
+			{
+				cout << "Chapter: " << filename << endl;
+			}
+		}
+	} while (FindNextFileA(hFind, &findData) != 0);
+
+	FindClose(hFind);
 }
 void Novel::PrintAll(int size, Novel arr[])
 {
@@ -599,7 +677,8 @@ void Novel::WorkWithNovelUser(int size, Novel* arr, int i)
 			ex = true;
 			break;
 		case 1: // Chepters list
-
+			ChaptersPrint(arr[i].title);
+			///     Read Chapter...
 			break;
 		default:
 			cout << "Wrong choice. Maybe you should try again?" << endl; system("pause");
@@ -630,15 +709,15 @@ void Novel::WorkWithNovelAdmin(int size, Novel* arr, int i)
 		case 3: // Change novel info
 			chapter = "NOVEL_INFO";
 			RewriteInfo(arr[i]);
-
 			break;
 		case 4: // Add new chepter
 
 			break;
 		case 5: // Redact chepter
-
+			ChaptersPrint(arr[i].title);
 			cout << "Enter chepter name: "; cin >> chapter;
-
+			check = ChapterNameCheck(chapter, arr[i].title);
+			(check == true) ? RedacrChapter(arr[i], chapter) : (void)printf("Wrong chapter name!\n");
 			break;
 		default:
 			cout << "Wrong choice. Maybe you should try again?" << endl; system("pause");
@@ -648,7 +727,7 @@ void Novel::WorkWithNovelAdmin(int size, Novel* arr, int i)
 }
 void Novel::WorkWithNovelEditor(int size, Novel* arr, int i)
 {
-	bool ex = false; int choice; string chapter;
+	bool ex = false; int choice; string chapter; bool check = false;
 	while (ex == false)
 	{
 		cout << "[0] - Go back\n[1] - Chepters list\n[2] - Add new chepter\n[3] - Redact chepter" << endl;
@@ -660,15 +739,16 @@ void Novel::WorkWithNovelEditor(int size, Novel* arr, int i)
 			ex = true;
 			break;
 		case 1: // Chepters list
-
+			ChaptersPrint(arr[i].title);
 			break;
 		case 2: // Add new chepter
-
+			
 			break;
 		case 3: // Redact chepter
-
+			ChaptersPrint(arr[i].title);
 			cout << "Enter chepter name: "; cin >> chapter;
-
+			check = ChapterNameCheck(chapter, arr[i].title);
+			(check == true) ? RedacrChapter(arr[i], chapter) : (void)printf("Wrong chapter name!\n");
 			break;
 		default:
 			cout << "Wrong choice. Maybe you should try again?" << endl; system("pause");

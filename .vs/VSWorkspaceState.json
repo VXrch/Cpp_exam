@@ -1,9 +1,7 @@
 {
   "ExpandedNodes": [
     "",
-    "\\MyExam",
-    "\\MyExam\\x64\\Debug",
-    "\\MyExam\\x64\\Debug\\MyExam.tlog"
+    "\\MyExam"
   ],
   "SelectedNode": "\\MyExam.sln",
   "PreviewInSolutionExplorer": false

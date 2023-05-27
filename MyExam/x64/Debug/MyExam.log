@@ -1,6 +1,10 @@
-﻿  Source.cpp
+﻿  Novel.cpp
+C:\Users\Админ\source\repos\MyExam\MyExam\Novel.cpp(192,6): warning C4311: приведение типов: усечение указателя из "HINSTANCE" в "int"
+C:\Users\Админ\source\repos\MyExam\MyExam\Novel.cpp(192,6): warning C4302: приведение типов: усечение из "HINSTANCE" к "int"
+  Source.cpp
 C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(8,9): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
 C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(9,9): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(33,1): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
-C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(151,16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(35,1): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(153,16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  Создание кода...
   MyExam.vcxproj -> C:\Users\Админ\source\repos\MyExam\x64\Debug\MyExam.exe

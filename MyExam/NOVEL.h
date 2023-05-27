@@ -1,6 +1,5 @@
 #pragma once
 #include<iostream>
-#include <filesystem>
 #include <fstream>
 #include<string>
 #include <Windows.h>
@@ -23,22 +22,26 @@ struct Novel
 	string description;
 
 
+	// OTHER
+	bool ChapterNameCheck(string chapter, string title);
+
 	// PRINTS
 	void Print();
 	void GenresPrint();
 	void PrintAll(int size, Novel arr[]);
+	void ChaptersPrint(string title);
 	void PrintGenreByNumber(int givenGenre);
 	void FullNovelPrint(int size, Novel arr[], int i);
 
 	// ADD NEW
 	void NewNovel();
-	void RewriteInfo(Novel& novel);
-	void NewChapter();
+	/*void NewChapter();*/
 
 	// WORKING WITH FILES
-	
-
-
+	void RewriteInfo(Novel& novel);
+	void RedacrChapter(Novel novel, string chapter);
+	// Delete chapter
+	// Delete novel
 
 	// SEARCHES
 	int NameSearch(int size, Novel arr[]);

@@ -8,6 +8,8 @@
 #include"PERSON.h";
 #include"NOVEL.h";
 
+#define MyDebug
+
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -194,18 +196,22 @@ Person* ReadFromFile(const string& filename, int& size)
         file.ignore();
     }
 
+//////////////////////////////////////////////
+#ifdef MyDebug
     for (int i = 0; i < size; i++)
     {
-        cout << "data [" << i << "]: " << endl;
-        cout << data[i].name << endl;
-        cout << data[i].email << endl;
-        cout << data[i].username << endl;
-        cout << data[i].password << endl;
-        cout << data[i].ID << endl;
-        cout << data[i].accessLevel << endl;
+        cout << " ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~" << endl;
+        cout << "name ~ " << data[i].name << endl;
+        cout << "email ~ " << data[i].email << endl;
+        cout << "username ~ " << data[i].username << endl;
+        cout << "password ~ " << data[i].password << endl;
+        cout << "ID ~ " << data[i].ID << endl;
+        cout << "accessLevel ~ " << data[i].accessLevel << endl;
     }
+//////////////////////////////////////////////
 
     system("pause");
+#endif // MyDebug
 
     file.close(); return data;
 }
