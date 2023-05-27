@@ -8,37 +8,54 @@
 #include"PERSON.h";
 #include"NOVEL.h";
 
-#define MyDebug
+//#define MyDebug
 
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const string filename = "ALLUSERS.txt";
+void MainMenu();
+Novel* FindNovels(int& size);
+int LogInMenu(int size, Person arr[]);
+void WriteNovelToFile(Novel novel, int size);
+void SmoothPhrase(const string& phrase, int delay);
+void TheRightSize(const string& directory, int& size);
+Person* ReadFromFile(const string& filename, int& size);
+void WriteToFile(const string& filename, Person* arr, int size);
+void ReadNovelInfoFromFile(const string& filePath, Novel& novel);
+void RecursiveFindNovels(const string& directory, Novel* novels, int& size);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const string filename = "ALLUSERS.txt"; const string directory = "RanobeLib";
 string phrase; int delay = 60; // Smooth phrase options 
 Person WhoIAm; int choice; bool ex;
 Person tempPerson; Novel tempNovel; // TEMPS
 Person* usersArray = nullptr; int usersSize = 0; // Users array
 Novel* novelsArray = nullptr; int novelSize = 0; // Novels array
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void WriteToFile(const string& filename, Person* arr, int size);
-Person* ReadFromFile(const string& filename, int& size);
-void SmoothPhrase(const string& phrase, int delay);
-int LogInMenu(int size, Person arr[]);
-void MainMenu();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void main()
+void START()
 {
     usersArray = ReadFromFile(filename, usersSize); // Reading data from a file into an array
+    
+    for (int i = 0; i < novelSize; i++)
+    {
+        TheRightSize(directory, novelSize);
+    }
+    novelsArray = FindNovels(novelSize);
+
     ex = false;
     while (ex == false) // log in
     {
         ex = LogInMenu(usersSize, usersArray);
     }
+}
+
+void main()
+{
+    START();
     ex = false;
     while (ex == false) // Menu
     {
@@ -158,6 +175,149 @@ void SmoothPhrase(const string& phrase, int delay)
         cout << "\r";
     }
     this_thread::sleep_for(chrono::milliseconds(1100));
+}
+
+// NOVEL FILES
+void WriteNovelToFile(Novel novel, int size)
+{
+    string filePath = "RanobeLib\\" + novel.title + "\\NOVEL_INFO.txt";
+    ofstream file(filePath);
+    if (file.is_open()) 
+    {
+        for (int i = 0; i < size; i++)
+        {
+            file << novel.title << endl;
+            file << novel.rating << endl;
+            file << novel.volumes << endl;
+            file << novel.chapters << endl;
+            file << novel.FullName << endl;
+            file << novel.ageRating << endl;
+            file << novel.status << endl;
+            file << novel.releasedYear << endl;
+            file << novel.ID << endl;
+            file << novel.author << endl;
+            for (int j = 0; j < 30; j++)
+            {
+                file << novel.genre[j] << " ";
+            }
+            file << endl;
+            file << novel.description << endl;
+        }
+        file.close();
+    }
+    else 
+    {
+        cout << "Failed to open the file." << endl;
+    }
+}
+Novel* FindNovels(int& size)
+{
+    const string rootDirectory = "RanobeLib";
+    Novel* novels = new Novel[size];
+
+    RecursiveFindNovels(rootDirectory, novels, size);
+
+    return novels;
+}
+void RecursiveFindNovels(const string& directory, Novel* novels, int& size)
+{
+    WIN32_FIND_DATAA findData;
+    const string searchPath = directory + "\\*";
+    HANDLE hFind = FindFirstFileA(searchPath.c_str(), &findData);
+
+    if (hFind == INVALID_HANDLE_VALUE)
+    {
+        cout << "Failed to find files in directory: " << directory << endl;
+        return;
+    }
+
+    do
+    {
+        if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+        {
+            string subDirectory = findData.cFileName;
+            if (subDirectory != "." && subDirectory != "..")
+            {
+                string subDirectoryPath = directory + "\\" + subDirectory;
+                RecursiveFindNovels(subDirectoryPath, novels, size);
+            }
+        }
+        else
+        {
+            string fileName = findData.cFileName;
+            if (fileName == "NOVEL_INFO.txt")
+            {
+                string filePath = directory + "\\" + fileName;
+                ReadNovelInfoFromFile(filePath, novels[size]);
+                size++;
+            }
+        }
+    } while (FindNextFileA(hFind, &findData) != 0);
+
+    FindClose(hFind);
+}
+void ReadNovelInfoFromFile(const string& filePath, Novel& novel)
+{
+    ifstream file(filePath);
+    if (file.is_open())
+    {
+        getline(file, novel.title);
+        getline(file, novel.rating);
+        getline(file, novel.volumes);
+        getline(file, novel.chapters);
+        getline(file, novel.FullName);
+        getline(file, novel.ageRating);
+        getline(file, novel.status);
+        file >> novel.releasedYear;
+        file >> novel.ID;
+        file.ignore();
+
+        for (int i = 0; i < 30; i++)
+        {
+            file >> novel.genre[i];
+        }
+
+        file.ignore();
+        getline(file, novel.description);
+
+        file.close();
+    }
+    else
+    {
+        cout << "I can't open this file!" << endl;
+    }
+}
+void TheRightSize(const string& directory, int& size)
+{
+    WIN32_FIND_DATAA fileData;
+    string searchPath = directory + "\\*.*";
+    HANDLE hFind = FindFirstFileA(searchPath.c_str(), &fileData);
+
+    if (hFind != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            if (fileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+            {
+                string subDirectory = fileData.cFileName;
+                if (subDirectory != "." && subDirectory != "..")
+                {
+                    string subDirectoryPath = directory + "\\" + subDirectory;
+                    TheRightSize(subDirectoryPath, size);
+                }
+            }
+            else
+            {
+                string fileName = fileData.cFileName;
+                if (fileName == "NOVEL_INFO.txt")
+                {
+                    size++;
+                }
+            }
+        } while (FindNextFileA(hFind, &fileData) != 0);
+
+        FindClose(hFind);
+    }
 }
 
 

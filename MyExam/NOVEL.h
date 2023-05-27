@@ -10,6 +10,7 @@ using namespace std;
 struct Novel
 {
 	string title;
+	string author;
 	string rating;
 	string volumes;
 	string chapters;
@@ -24,6 +25,7 @@ struct Novel
 
 
 	// OTHER
+	int HowManyChapters(Novel novel);
 	bool ChapterNameCheck(string chapter, string title);
 
 	// PRINTS
@@ -40,8 +42,8 @@ struct Novel
 	void RewriteInfo(Novel& novel);
 	bool NewNovel(Novel*& arr, int& size);
 	void ReadChapter(Novel novel, string chapter);
+	void RedactChapter(Novel novel, string chapter);
 	bool DeleteChepter(Novel novel, string chapter);
-	void RedacrChapter(Novel novel, string chapter);
 
 	// SEARCHES
 	int NameSearch(int size, Novel arr[]);

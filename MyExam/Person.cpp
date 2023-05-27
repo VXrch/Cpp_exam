@@ -219,7 +219,7 @@ void Person::Register(int& size, Person*& arr, Person& WhoIAm)
 		temparr[i] = arr[i];
 	}
 
-
+	system("cls");
 	temparr[size].Fill(WhoIAm, size, arr);
 	temparr[size].ID = size;
 

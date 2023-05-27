@@ -1,7 +1,6 @@
-﻿  Person.cpp
-C:\Users\Админ\source\repos\MyExam\MyExam\Person.cpp(1,10): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Админ\source\repos\MyExam\MyExam\Person.cpp(124,29): warning C4834: отмена возвращаемого значения функции с атрибутом "nodiscard"
-C:\Users\Админ\source\repos\MyExam\MyExam\Person.cpp(80,7): warning C4101: ch: неиспользованная локальная переменная
-C:\Users\Админ\source\repos\MyExam\MyExam\Person.cpp(293): warning C4715: Person::ProfileMenuAdmin: значение возвращается не при всех путях выполнения
-C:\Users\Админ\source\repos\MyExam\MyExam\Person.cpp(320): warning C4715: Person::ProfileMenuUser: значение возвращается не при всех путях выполнения
+﻿  Source.cpp
+C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(8,9): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
+C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(9,9): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
+C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(57,1): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(170,16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   MyExam.vcxproj -> C:\Users\Админ\source\repos\MyExam\x64\Debug\MyExam.exe
