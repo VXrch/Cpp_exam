@@ -22,6 +22,7 @@ struct Novel
 	string description;
 
 
+
 	// OTHER
 	bool ChapterNameCheck(string chapter, string title);
 
@@ -33,15 +34,14 @@ struct Novel
 	void PrintGenreByNumber(int givenGenre);
 	void FullNovelPrint(int size, Novel arr[], int i);
 
-	// ADD NEW
-	void NewNovel();
-	/*void NewChapter();*/
-
-	// WORKING WITH FILES
+	// WORK WITH NOVEL
+	void NewChapter(Novel novel);
+	bool DeleteNovel(Novel novel);
 	void RewriteInfo(Novel& novel);
+	bool NewNovel(Novel*& arr, int& size);
+	void ReadChapter(Novel novel, string chapter);
+	bool DeleteChepter(Novel novel, string chapter);
 	void RedacrChapter(Novel novel, string chapter);
-	// Delete chapter
-	// Delete novel
 
 	// SEARCHES
 	int NameSearch(int size, Novel arr[]);
