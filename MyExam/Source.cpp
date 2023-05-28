@@ -5,53 +5,34 @@
 #include <thread>
 #include <Windows.h>
 #include <Shellapi.h>
-#include"PERSON.h";
-#include"NOVEL.h";
+#include"PERSON.h"
+#include"NOVEL.h"
 
-//#define MyDebug
+#define MyDebug
 
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MainMenu();
-Novel* FindNovels(int& size);
-int LogInMenu(int size, Person arr[]);
-void WriteNovelToFile(Novel novel, int size);
-void SmoothPhrase(const string& phrase, int delay);
-void TheRightSize(const string& directory, int& size);
-Person* ReadFromFile(const string& filename, int& size);
-void WriteToFile(const string& filename, Person* arr, int size);
-void ReadNovelInfoFromFile(const string& filePath, Novel& novel);
-void RecursiveFindNovels(const string& directory, Novel* novels, int& size);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-const string filename = "ALLUSERS.txt"; const string directory = "RanobeLib";
+const string filename1 = "ALLUSERS.txt"; const string filename2 = "NOVELS_INFO.txt";
 string phrase; int delay = 60; // Smooth phrase options 
 Person WhoIAm; int choice; bool ex;
 Person tempPerson; Novel tempNovel; // TEMPS
-Person* usersArray = nullptr; int usersSize = 0; // Users array
-Novel* novelsArray = nullptr; int novelSize = 0; // Novels array
-
+int usersSize = 0; Person* usersArray = new Person[usersSize]; // Users array
+int novelSize = 0; Novel* novelsArray = new Novel[novelSize]; // Novels array
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void START()
-{
-    usersArray = ReadFromFile(filename, usersSize); // Reading data from a file into an array
-    
-    for (int i = 0; i < novelSize; i++)
-    {
-        TheRightSize(directory, novelSize);
-    }
-    novelsArray = FindNovels(novelSize);
 
-    ex = false;
-    while (ex == false) // log in
-    {
-        ex = LogInMenu(usersSize, usersArray);
-    }
-}
+void START();
+void MainMenu();
+bool LogInMenu(int size, Person arr[]);
+void WriteNovelsToFile(Novel*& novels, int& size);
+void SmoothPhrase(const string& phrase, int delay);
+Person* ReadFromFile(const string& filename, int& size);
+Novel* ReadNovelsFromFile(const string& filename, int& size);
+void WriteToFile(const string& filename, Person* arr, int size);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void main()
 {
@@ -122,11 +103,24 @@ void main()
         }
     }
 
-    WriteToFile(filename, usersArray, usersSize);
+    WriteToFile(filename1, usersArray, usersSize);
+    WriteNovelsToFile(novelsArray, novelSize);
     delete[] usersArray; delete[] novelsArray;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void START()
+{
+    usersArray = ReadFromFile(filename1, usersSize); // Reading data from a file into an array
+    novelsArray = ReadNovelsFromFile(filename2, novelSize); // Reading data from a file into an array
+
+    ex = false;
+    while (ex == false) // log in
+    {
+        ex = LogInMenu(usersSize, usersArray);
+    }
+}
 
 void MainMenu()
 {
@@ -134,7 +128,7 @@ void MainMenu()
     cout << " [Profile] | [Ranobes] | [Exit]\n   [1]     |    [2]    |  [0]\n\n (o_o)? ";
     cin >> choice;
 }
-int LogInMenu(int size, Person arr[])
+bool LogInMenu(int size, Person arr[])
 {
     char loginto; system("cls");
     cout << " Log in [L] || [R] Register" << endl; cin >> loginto;
@@ -153,17 +147,17 @@ int LogInMenu(int size, Person arr[])
                 system("cls");
 
                 WhoIAm = arr[i];
-                return 1;
+                return true;
             }
         }
         cout << endl << "\t"; phrase = " Wrong login or password! Please try again!"; SmoothPhrase(phrase, delay);
     }
     else if (loginto == 'R' || loginto == 'r') // Register on account
     {
-        usersArray[0].Register(usersSize, usersArray, WhoIAm);
-        return 1;
+        tempPerson.Register(usersSize, usersArray, WhoIAm);
+        return true;
     }
-    return 0;
+    return false;
 }
 void SmoothPhrase(const string& phrase, int delay)
 {
@@ -178,146 +172,111 @@ void SmoothPhrase(const string& phrase, int delay)
 }
 
 // NOVEL FILES
-void WriteNovelToFile(Novel novel, int size)
+void WriteNovelsToFile(Novel*& novels, int& size)
 {
-    string filePath = "RanobeLib\\" + novel.title + "\\NOVEL_INFO.txt";
-    ofstream file(filePath);
-    if (file.is_open()) 
+    ofstream outputFile("NOVELS_INFO.txt");
+    if (outputFile.is_open())
     {
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < size; ++i)
         {
-            file << novel.title << endl;
-            file << novel.rating << endl;
-            file << novel.volumes << endl;
-            file << novel.chapters << endl;
-            file << novel.FullName << endl;
-            file << novel.ageRating << endl;
-            file << novel.status << endl;
-            file << novel.releasedYear << endl;
-            file << novel.ID << endl;
-            file << novel.author << endl;
-            for (int j = 0; j < 30; j++)
+            outputFile << novels[i].title << endl;
+            outputFile << novels[i].author << endl;
+            outputFile << novels[i].rating << endl;
+            outputFile << novels[i].volumes << endl;
+            outputFile << novels[i].chapters << endl;
+            outputFile << novels[i].FullName << endl;
+            outputFile << novels[i].ageRating << endl;
+            outputFile << novels[i].status << endl;
+            outputFile << novels[i].language << endl;
+            outputFile << novels[i].releasedYear << endl;
+            outputFile << novels[i].ID << endl;
+            for (int j = 0; j < 10; ++j)
             {
-                file << novel.genre[j] << " ";
+                outputFile << novels[i].genre[j] << endl;
             }
-            file << endl;
-            file << novel.description << endl;
+            outputFile << endl;
         }
-        file.close();
-    }
-    else 
-    {
-        cout << "Failed to open the file." << endl;
-    }
-}
-Novel* FindNovels(int& size)
-{
-    const string rootDirectory = "RanobeLib";
-    Novel* novels = new Novel[size];
-
-    RecursiveFindNovels(rootDirectory, novels, size);
-
-    return novels;
-}
-void RecursiveFindNovels(const string& directory, Novel* novels, int& size)
-{
-    WIN32_FIND_DATAA findData;
-    const string searchPath = directory + "\\*";
-    HANDLE hFind = FindFirstFileA(searchPath.c_str(), &findData);
-
-    if (hFind == INVALID_HANDLE_VALUE)
-    {
-        cout << "Failed to find files in directory: " << directory << endl;
-        return;
-    }
-
-    do
-    {
-        if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        {
-            string subDirectory = findData.cFileName;
-            if (subDirectory != "." && subDirectory != "..")
-            {
-                string subDirectoryPath = directory + "\\" + subDirectory;
-                RecursiveFindNovels(subDirectoryPath, novels, size);
-            }
-        }
-        else
-        {
-            string fileName = findData.cFileName;
-            if (fileName == "NOVEL_INFO.txt")
-            {
-                string filePath = directory + "\\" + fileName;
-                ReadNovelInfoFromFile(filePath, novels[size]);
-                size++;
-            }
-        }
-    } while (FindNextFileA(hFind, &findData) != 0);
-
-    FindClose(hFind);
-}
-void ReadNovelInfoFromFile(const string& filePath, Novel& novel)
-{
-    ifstream file(filePath);
-    if (file.is_open())
-    {
-        getline(file, novel.title);
-        getline(file, novel.rating);
-        getline(file, novel.volumes);
-        getline(file, novel.chapters);
-        getline(file, novel.FullName);
-        getline(file, novel.ageRating);
-        getline(file, novel.status);
-        file >> novel.releasedYear;
-        file >> novel.ID;
-        file.ignore();
-
-        for (int i = 0; i < 30; i++)
-        {
-            file >> novel.genre[i];
-        }
-
-        file.ignore();
-        getline(file, novel.description);
-
-        file.close();
+        outputFile.close();
+        cout << "Successfull!" << endl;
     }
     else
     {
-        cout << "I can't open this file!" << endl;
+        cout << "NOPE" << endl;
     }
 }
-void TheRightSize(const string& directory, int& size)
+Novel* ReadNovelsFromFile(const string& filename, int& size)
 {
-    WIN32_FIND_DATAA fileData;
-    string searchPath = directory + "\\*.*";
-    HANDLE hFind = FindFirstFileA(searchPath.c_str(), &fileData);
-
-    if (hFind != INVALID_HANDLE_VALUE)
+    Novel* data = nullptr;
+    ifstream file(filename);
+    if (!file)
     {
-        do
-        {
-            if (fileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-            {
-                string subDirectory = fileData.cFileName;
-                if (subDirectory != "." && subDirectory != "..")
-                {
-                    string subDirectoryPath = directory + "\\" + subDirectory;
-                    TheRightSize(subDirectoryPath, size);
-                }
-            }
-            else
-            {
-                string fileName = fileData.cFileName;
-                if (fileName == "NOVEL_INFO.txt")
-                {
-                    size++;
-                }
-            }
-        } while (FindNextFileA(hFind, &fileData) != 0);
-
-        FindClose(hFind);
+        cout << "Something went wrong >:(" << endl;
+        return data;
     }
+
+    string line;
+    while (getline(file, line))
+    {
+        size++;
+    }
+
+    size /= 21;
+
+    file.clear();
+    file.seekg(0, ios::beg);
+
+    data = new Novel[size];
+
+    for (int i = 0; i < size; i++)
+    {
+        getline(file, data[i].title);
+        getline(file, data[i].author);
+        getline(file, data[i].rating);
+        getline(file, data[i].volumes);
+        getline(file, data[i].chapters);
+        getline(file, data[i].FullName);
+        getline(file, data[i].ageRating);
+        getline(file, data[i].status);
+        getline(file, data[i].language);
+        file >> data[i].releasedYear;
+        file >> data[i].ID;
+        file.ignore();
+
+        for (int j = 0; j < 10; j++)
+        {
+            file >> data[i].genre[j];
+        }
+        file.ignore();
+    }
+
+#ifdef MyDebug
+    for (int i = 0; i < size; i++)
+    {
+        cout << " ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~" << endl;
+        cout << "title ~ " << data[i].title << endl;
+        cout << "author ~ " << data[i].author << endl;
+        cout << "rating ~ " << data[i].rating << endl;
+        cout << "volumes ~ " << data[i].volumes << endl;
+        cout << "chapters ~ " << data[i].chapters << endl;
+        cout << "FullName ~ " << data[i].FullName << endl;
+        cout << "ageRating ~ " << data[i].ageRating << endl;
+        cout << "status ~ " << data[i].status << endl;
+        cout << "language ~ " << data[i].language << endl;
+        cout << "releasedYear ~ " << data[i].releasedYear << endl;
+        cout << "ID ~ " << data[i].ID << endl;
+        cout << "genre ~ ";
+        for (int j = 0; j < 10; j++)
+        {
+            cout << data[i].genre[j] << " ";
+        }
+        cout << endl;
+    }
+
+    system("pause");
+#endif // MyDebug
+
+    file.close();
+    return data;
 }
 
 

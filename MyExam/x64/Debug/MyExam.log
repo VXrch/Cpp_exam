@@ -1,6 +1,4 @@
 ﻿  Source.cpp
-C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(8,9): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(9,9): warning C4067: непредвиденные лексемы за директивой препроцессора, требуется newline
-C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(57,1): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
-C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(170,16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(38,1): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+C:\Users\Админ\source\repos\MyExam\MyExam\Source.cpp(164,16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   MyExam.vcxproj -> C:\Users\Админ\source\repos\MyExam\x64\Debug\MyExam.exe
