@@ -77,7 +77,7 @@ int Person::Check(int size, Person arr[])
 
 void Person::Rewrite(int size, Person arr[], Person& WhoIAm, int WhatToDo)
 {
-	char ch; int option; bool ex = false;
+	char ch; int option; bool ex = false; bool check = false; string newUsername; bool ext;
 	if (WhatToDo == 0)
 	{
 		int choice = Check(size, arr);
@@ -86,12 +86,13 @@ void Person::Rewrite(int size, Person arr[], Person& WhoIAm, int WhatToDo)
 			while (ex == false)
 			{
 				cout << "___---___---___---___---___---___---___" << endl;
-				cout << "What do you want to change?\n[1] - name\n[2] - email\n[3] - username\n[4] - password\n" << endl;
+				cout << "What do you want to change?\n[0] - Go back\n[1] - Name\n[2] - Email\n[3] - Username\n[4] - Password\n" << endl;
 				cout << "Your choice  (/`^_^)/'  "; cin >> option;
 				cout << "___---___---___---___---___---___---___" << endl;
 
 				switch (option)
 				{
+				case 0: ex = true; break;
 				case 1: // name
 					cout << "Enter new name: "; cin >> arr[choice].name;
 					cout << "___---___---___---___---___---___---___" << endl;
@@ -103,9 +104,28 @@ void Person::Rewrite(int size, Person arr[], Person& WhoIAm, int WhatToDo)
 					ex = true;
 					break;
 				case 3: // username
-					cout << "Enter new username: "; cin >> arr[choice].username;
-					cout << "___---___---___---___---___---___---___" << endl;
-					ex = true;
+					while (ext = false)
+					{
+						cout << "Enter new username (or [0] to exit): "; cin >> newUsername;
+						for (int i = 0; i < size; i++)
+						{
+							if (arr[i].username == newUsername)
+							{
+								cout << "This username is alredy exist" << endl;
+								check = false;
+							}
+							else if (newUsername == "0")
+							{
+								ext = true;
+							}
+						}
+						if (check == true)
+						{
+							arr[choice].username == newUsername;
+						}
+						cout << "___---___---___---___---___---___---___" << endl;
+						ex = true;
+					}
 					break;
 				case 4: // password
 					cout << "Enter new password: "; cin >> arr[choice].password;
@@ -122,7 +142,7 @@ void Person::Rewrite(int size, Person arr[], Person& WhoIAm, int WhatToDo)
 	else if (WhatToDo == 1)
 	{
 		cout << "___---___---___---___---___---___---___" << endl;
-		cout << "What do you want to change?\n[1] - name\n[2] - email\n[3] - username\n[4] - password\n" << endl;
+		cout << "What do you want to change?\n[0] - Go back\n[1] - Name\n[2] - Email\n[3] - Username\n[4] - Password\n" << endl;
 		cout << "Your choice  (/`^_^)/'  "; cin >> option;
 		cout << "___---___---___---___---___---___---___" << endl;
 
@@ -136,6 +156,7 @@ void Person::Rewrite(int size, Person arr[], Person& WhoIAm, int WhatToDo)
 		}
 		switch (option)
 		{
+		case 0: ex = true; break;
 		case 1: // name
 			cout << "Enter new name: "; cin >> arr[iterator].name;
 			cout << "___---___---___---___---___---___---___" << endl;
@@ -198,7 +219,7 @@ void Person::Register(int& size, Person*& arr, Person& WhoIAm)
 		temparr[i] = arr[i];
 	}
 
-
+	system("cls");
 	temparr[size].Fill(WhoIAm, size, arr);
 	temparr[size].ID = size;
 

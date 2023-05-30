@@ -1,86 +1,107 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <filesystem>
 #include <Windows.h>
 #include <Shellapi.h>
 #include "NOVEL.h"
 
 using namespace std;
 
+// OTHER
+int Novel::HowManyChapters(Novel novel)
+{
+	string folderPath = "RanobeLib\\" + novel.title;
+	int count = 0;
+	WIN32_FIND_DATAA findData;
+	HANDLE hFind;
+
+	string searchPath = folderPath + "\\*.*";
+	hFind = FindFirstFileA(searchPath.c_str(), &findData);
+
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
+		do
+		{
+			if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+			{
+				string fileName = findData.cFileName;
+				string extension = fileName.substr(fileName.find_last_of(".") + 1);
+				if (extension == "txt")
+				{
+					count++;
+				}
+			}
+		} while (FindNextFileA(hFind, &findData) != 0);
+
+		FindClose(hFind);
+	}
+
+	count--; return count;
+}
+bool Novel::ChapterNameCheck(string chapter, string title)
+{
+	string path = "RanobeLib\\" + title;
+
+	ifstream file;
+	file.open(path);
+	if (!file)
+	{
+		cout << "Invalid directory: " << path << endl;
+		return false;
+	}
+
+	string filename;
+	while (getline(file, filename))
+	{
+		if (filename.substr(0, filename.find_last_of('.')) == chapter && filename.substr(filename.find_last_of('.') + 1) == "txt")
+		{
+			cout << "Chapter: " << filename.substr(0, filename.find_last_of('.')) << endl;
+			file.close();
+			return true;
+		}
+	}
+
+	cout << "Wrong chapter name!" << endl;
+	file.close();
+	return false;
+}
 
 // Novel work
-void Novel::NewNovel()
+void Novel::NewChapter(Novel novel)
 {
-	cout << "Write ranobe title: \nTitle (name without spaces! For example: NameOfTitle) ~~~ "; cin >> title;
+	string fileName;
+	cout << "Write chapter name (without spaces! For example: FirstChapter) ~~~ "; cin >> fileName;
 	bool hasSpaces = false;
-	for (char c : title)
+	for (char c : fileName)
 	{
 		if (c == ' ')
 		{
-			hasSpaces = true;
+			hasSpaces = true; cout << "Chapter has spaces! Try again later!" << endl;
 			break;
 		}
 	}
 	if (hasSpaces == false)
 	{
-		string command = "md RanobeLib\\" + title;
-		if (system(command.c_str()) == 0)
-		{
-			cout << "Ok!" << endl;
-			cout << "What is his rating? "; cin >> rating;
-			cout << "How many volumes are there? "; cin >> volumes;
-			cout << "How many chapters are there? "; cin >> chapters;
-			cout << "Enter full name: "; cin.ignore(); getline(cin, FullName);
-			cout << "What is the age rating of this anime? "; cin >> ageRating;
-			cout << "What is the status of this anime? (ongoing, completed, frozen) "; cin >> status;
-			cout << "What year did this anime start airing? "; cin >> releasedYear;
+		string filePath = "RanobeLib\\" + novel.title + "\\" + fileName + ".txt";
 
-			GenresPrint(); cout << endl;
-
-			cout << "Enter the genre numbers (from the table above) and enter [0] when you finish entering!" << endl;
-
-			for (int i = 0; i < 30; i++)
-			{
-				cin >> genre[i];
-				if (genre[i] == 0)
-				{
-					i = 30;
-				}
-				else if (genre[i] > 30 || genre[i] < 1)
-				{
-					cout << "Incorrect genre number! Try a number between [1] and [30]!" << endl;
-				}
-				for (int j = 0; j < 30; j++)
-				{
-					if (genre[i] == genre[j])
-					{
-						cout << "You have already entered this genre try entering something else!" << endl;
-					}
-				}
-			}
-
-			system("cls");
-			cout << "Description of the anime storyline: ";
-			cin.ignore(); getline(cin, description);
-
-			char chce;
-			cout << "Do you want to add a new chapter?\n[Y] / [N]\n(0_0)? "; cin >> chce;
-			if (chce == 'y' || chce == 'Y')
-			{
-				
-			}
-			cout << "Ok! That's all!" << endl;
-		}
-		else
-		{
-			cout << "Something went wrong :(" << endl;
-		}
+		ofstream file(filePath);
+		cout << (file.is_open() ? "The chapter was successfully created!" : "The chapter was not created!") << endl;
 	}
-	else
+
+	RedactChapter(novel, fileName);
+}
+bool Novel::DeleteNovel(Novel novel)
+{
+	string filename = "RanobeLib\\" + novel.title;
+	LPCSTR path = filename.c_str();
+
+	if (!RemoveDirectoryA(path))
 	{
-		cout << "You were told not to use the space! \\(`o_`o#\\)" << endl; // Idiot -_-
+		cout << "I couldn't delete the novel!" << endl;
+		return false;
 	}
+
+	cout << "The novel has been successfully deleted!" << filename << endl; return true;
 }
 void Novel::RewriteInfo(Novel& novel)
 {
@@ -88,7 +109,7 @@ void Novel::RewriteInfo(Novel& novel)
 	while (ex == false)
 	{
 		cout << "___---___---___---___---___---___---___" << endl;
-		cout << "What do you want to change?\n[0] - Go back\n[1] - Title\n[2] - Rating\n[3] - Volumes\n[4] - Chapters\n[5] - Full name\n[6] - Age rating\n[7] - Status\n[8] - Released year\n[9] - Genres\n[10] - Description" << endl;
+		cout << "What do you want to change?\n[0] - Go back\n[1] - Title\n[2] - Rating\n[3] - Volumes\n[4] - Chapters\n[5] - Full name\n[6] - Age rating\n[7] - Status\n[8] - Released year\n[9] - Genres\n[10] - Description\n[11] - Author\n[12] - Language" << endl;
 		cout << "Your choice  (/`^_^)/'  "; cin >> option;
 		cout << "___---___---___---___---___---___---___" << endl;
 
@@ -138,24 +159,174 @@ void Novel::RewriteInfo(Novel& novel)
 			}
 			break;
 		case 10: // Description
-			system("cls");
-			cout << "Enter the new description of the anime storyline: ";
-			cin.ignore(); getline(cin, novel.description); break;
+			WriteDescription(novel);
+			break;
+		case 11:
+			cout << "Enter the new author of the title: "; novel.author;
+			break;
+		case 12:
+			cout << "Enter the original language: "; cin >> novel.language;
+			break;
 		default:
 			cout << "Wrong choice. Maybe you should try again?" << endl; system("pause"); break;
 		}
 	}
 }
+void Novel::WriteDescription(Novel novel)
+{
+	system("cls"); string description;
+	cout << "Enter the new description of the title storyline: ";
+	cin.ignore(); getline(cin, description); bool check = false;
 
+	string filePath = "RanobeLib\\" + novel.title + "\\DESCRIPTION.txt";
+	ofstream outputFile(filePath, ios::trunc);
+	outputFile.is_open()
+		? (outputFile << description << endl, outputFile.close(), cout << "Ok!" << endl)
+		: cout << "Failed to open the file." << endl;
+}
+void Novel::NewNovel(bool &check)
+{
+	cout << "Write ranobe title: \nTitle (name without spaces! For example: NameOfTitle) ~~~ "; cin >> title; cin.ignore();
+	bool hasSpaces = false;
+	for (char c : title)
+	{
+		if (c == ' ')
+		{
+			hasSpaces = true;
+		}
+	}
+	if (hasSpaces == false)
+	{
+		string command = "md RanobeLib\\" + title;
+		if (system(command.c_str()) == 0)
+		{
+			cout << "Ok!" << endl;
+			cout << "What is his rating? "; cin >> rating;
+			cout << "Enter the original language: "; cin >> language;
+			cout << "How many volumes are there? "; cin >> volumes;
+			cout << "How many chapters are there? "; cin >> chapters;
+			cout << "Who is the author of this title? "; cin.ignore(); getline(cin, author);
+			cout << "Enter full name: "; getline(cin, FullName);
+			cout << "What is the age rating of this anime? "; cin >> ageRating;
+			cout << "What is the status of this anime? (ongoing, completed, frozen) "; cin >> status;
+			cout << "What year did this anime start airing? "; cin >> releasedYear;
+
+			for (int i = 0; i < 30; i++)
+			{
+				system("cls");
+				GenresPrint(); cout << endl;
+				cout << "Enter the genre numbers (from the table above) and enter [0] when you finish entering!" << endl;
+
+				cin >> genre[i];
+				if (genre[i] == 0)
+				{
+					break;
+				}
+				else if (genre[i] > 35 || genre[i] < 1)
+				{
+					cout << "Incorrect genre number! Try a number between [1] and [35]!" << endl; system("pause");
+				}
+				for (int j = 0; j < 30; j++)
+				{
+					if (genre[i] == genre[j] && i != j)
+					{
+						cout << "You have already entered this genre try entering something else!" << endl; system("pause");
+					}
+				}
+			}
+			system("cls");
+			cout << "Ok! That's all!" << endl; check = true;
+		}
+		else
+		{
+			cout << "Something went wrong :(" << endl; check = false;
+		}
+	}
+	else
+	{
+		cout << "You were told not to use the space! \\(`o_`o#\\)" << endl; // Idiot -_- 
+		check = false;
+	}
+}
+void Novel::AddNovel(int& size, Novel*& arr)
+{
+	Novel* temparr = new Novel[size + 1];
+
+	for (int i = 0; i < size; i++)
+	{
+		temparr[i] = arr[i];
+	}
+
+	bool check = false;
+	while (check == false)
+	{
+		temparr[size].NewNovel(check);
+		system("cls");
+	}
+	char chce;
+	cout << "Do you want to add a new chapter?\n[Y] / [N]\n(0_0)? "; cin >> chce;
+	if (chce == 'y' || chce == 'Y')
+	{
+		NewChapter(temparr[size]);
+	}
+	system("cls");
+	temparr[size].ID = size;
+
+	for (int i = 0; i < size; i++)
+	{
+		if (arr[i].ID == temparr[size].ID || temparr[i].ID == temparr[size].ID)
+		{
+			temparr[size].ID++;
+			i = -1;
+		}
+	}
+
+	size++;
+	delete[] arr;
+	arr = temparr;
+}
+void Novel::ReadChapter(Novel novel, string chapter)
+{
+	string filePath = "RanobeLib\\" + novel.title + "\\" + chapter;
+	wstring wFilePath(filePath.begin(), filePath.end());
+	ShellExecuteW(nullptr, L"open", L"notepad.exe", wFilePath.c_str(), nullptr, SW_SHOWNORMAL);
+}
+bool Novel::DeleteChepter(Novel novel, string chapter)
+{
+	string filename = "RanobeLib\\" + novel.title + "\\" + chapter + ".txt";
+	LPCSTR path = filename.c_str();
+
+	BOOL result = DeleteFileA(path);
+
+	if (result == FALSE)
+	{
+		cout << "Can't delete this file!" << endl; return false;
+	}
+	return true;
+}
+void Novel::RedactChapter(Novel novel, string chapter)
+{
+	string path = "RanobeLib\\" + novel.title + "\\" + chapter + ".txt";
+	
+	ifstream file(path);
+	if (!file)
+	{
+		cout << "File not found: " << path << endl;
+		return;
+	}
+	file.close();
+
+	wstring wpath(path.begin(), path.end());
+	LPCWSTR filePath = wpath.c_str();
+
+	HINSTANCE result = ShellExecuteW(nullptr, L"open", L"notepad.exe", filePath, nullptr, SW_SHOW);
+	if ((int)result <= 32)
+	{
+		cout << "Failed to open file in Notepad." << endl;
+	}
+}
 
 // Prints
-void Novel::Print()
-{
-	cout << "Title: " << FullName << "\nRating: " << rating << "\nVolumes: " << volumes
-		<< "\nChapters: " << chapters << "\nAge rating: " << ageRating
-		<< "\nStatus: " << status << "\nRelease year: " << releasedYear;
-	cout << "\nDescription:\n" << description << endl;
-}
 void Novel::GenresPrint()
 {
 	cout << "[1] - Action" << "\t\t" << "[11] - Josei" << "\t\t" << "[21] - Sci-fi" << "\t\t" << "[31] - Xianxia" << endl
@@ -169,12 +340,65 @@ void Novel::GenresPrint()
 		<< "[9] - GenderBend" << "\t" << "[19] - Romance" << "\t\t" << "[29] - Smut" << endl
 		<< "[10] - Harem" << "\t\t" << "[20] - SchoolLife" << "\t" << "[30] - Trageby" << endl;
 }
+void Novel::Print(Novel novel)
+{
+	cout << "Title: " << novel.FullName << "\nRating: " << novel.rating << "\nVolumes: " << novel.volumes
+		<< "\nChapters: " << novel.chapters << "\nAge rating: " << novel.ageRating << "\nStatus: " << novel.status
+		<< "\nRelease year: " << novel.releasedYear << "\nAuthor: " << novel.author << "\nThe original language: " << novel.language;
+	cout << "\nDescription:\n"; PrintDescription(novel);
+}
+void Novel::ChaptersPrint(string title)
+{
+	string path = "RanobeLib\\" + title;
+
+	WIN32_FIND_DATAA findData;
+	HANDLE hFind = FindFirstFileA((path + "\\*").c_str(), &findData);
+
+	if (hFind == INVALID_HANDLE_VALUE)
+	{
+		cout << "Invalid directory: " << path << endl;
+		return;
+	}
+	do
+	{
+		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			// Continue
+		}
+		else
+		{
+			string filename = findData.cFileName;
+			string extension = filename.substr(filename.find_last_of('.') + 1);
+			if (extension == "txt")
+			{
+				cout << "Chapter: " << filename << endl;
+			}
+		}
+	} while (FindNextFileA(hFind, &findData) != 0);
+
+	FindClose(hFind);
+}
+void Novel::PrintDescription(Novel novel)
+{
+	string filePath = "RanobeLib\\" + novel.title + "\\DESCRIPTION.txt";
+	ifstream inputFile(filePath);
+	if (inputFile.is_open()) {
+		string line;
+		while (getline(inputFile, line)) {
+			cout << line << endl;
+		}
+		inputFile.close();
+	}
+	else {
+		cout << "I can't open this file!" << endl;
+	}
+}
 void Novel::PrintAll(int size, Novel arr[])
 {
 	system("cls");
 	for (int i = 0; i < size; i++)
 	{
-		cout << arr[i].FullName << "  ~~~  title rating - " << arr[i].rating << "  ~  chapters - " << arr[i].chapters << "  ~  age rating - " << arr[i].ageRating << "  ~  ID - " << arr[i].ID << endl;
+		Print(arr[i]);
 	}
 }
 void Novel::PrintGenreByNumber(int givenGenre)
@@ -197,10 +421,19 @@ void Novel::FullNovelPrint(int size, Novel arr[], int i)
 {
 	cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl << endl;
 	cout << "     | " << arr[i].FullName << " |" << endl
-		<< "Rating ~ " << arr[i].rating << "\nVolumes ~ " << arr[i].volumes
-		<< "\nChapters ~ " << arr[i].chapters << "\nAge rating ~ " << arr[i].ageRating
-		<< "\nStatus ~ " << arr[i].status << "\nRelease year ~ " << arr[i].releasedYear;
-	cout << " ~ ~ ~ ~ ~ ~ ~ Description ~ ~ ~ ~ ~ ~ ~ " << endl << arr[i].description << endl;
+		<< "Rating ~ " << arr[i].rating << "\nAuthor ~ " << arr[i].author
+		<< "\nVolumes ~ " << arr[i].volumes << "\nChapters ~ " << arr[i].chapters
+		<< "\nAge rating ~ " << arr[i].ageRating << "\nStatus ~ " << arr[i].status
+		<< "\nRelease year ~ " << arr[i].releasedYear << "\nThe original language : " << language << endl;
+	for (int j = 0; j < size; j++)
+	{
+		if (arr[i].genre[j] != 0)
+		{
+			PrintGenreByNumber(arr[i].genre[j]);
+		}
+	}
+	cout << " ~ ~ ~ ~ ~ ~ ~ Description ~ ~ ~ ~ ~ ~ ~ " << endl;
+	PrintDescription(arr[i]);
 	cout << " ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ " << endl;
 }
 
@@ -215,7 +448,7 @@ int Novel::NameSearch(int size, Novel arr[])
 		if (temp.FullName == arr[i].FullName)
 		{
 			cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
-			arr[i].Print();
+			arr[i].FullNovelPrint(size, arr, i);
 			cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
 
 			return i;
@@ -264,7 +497,33 @@ int Novel::RatingSearch(int size, Novel arr[])
 		if (temp.rating == arr[i].rating)
 		{
 			cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
-			arr[i].Print();
+			arr[i].Print(arr[i]);
+		}
+	}
+	cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
+
+	cout << "[0] - Exit\n[1] - Choose a novel\n"; int choice; cout << " (o_O)? "; cin >> choice;
+	if (choice == 1)
+	{
+		cout << "Eneter novel's ID: "; cin >> choice;
+		return choice;
+	}
+	else
+	{
+		return -1;
+	}
+}
+int Novel::AuthorSearch(int size, Novel arr[])
+{
+	Novel temp;
+	cout << "Enter the author's name: "; cin.ignore(); getline(cin, temp.author);
+	
+	for (int i = 1; i < size; i++)
+	{
+		if (temp.author == arr[i].author)
+		{
+			cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
+			Print(arr[i]);
 		}
 	}
 	cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
@@ -290,7 +549,7 @@ int Novel::VolumesSearch(int size, Novel arr[])
 		if (temp.volumes == arr[i].volumes)
 		{
 			cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
-			arr[i].Print();
+			Print(arr[i]);
 		}
 	}
 	cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
@@ -316,7 +575,7 @@ int Novel::ChaptersSearch(int size, Novel arr[])
 		if (arr[0].chapters == arr[i].chapters)
 		{
 			cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
-			arr[i].Print();
+			Print(arr[i]);
 		}
 	}
 	cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
@@ -342,7 +601,7 @@ int Novel::AgeRatingSearch(int size, Novel arr[])
 		if (temp.ageRating == arr[i].ageRating)
 		{
 			cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
-			arr[i].Print();
+			Print(arr[i]);
 		}
 	}
 	cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
@@ -383,20 +642,24 @@ void Novel::SearchNovelsByGenres(Novel* arr, int size, int* searchGenres, int se
 		if (found)
 		{
 			cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
-			arr[i].Print();
+			Print(arr[i]);
 		}
 	}
 }
 
 // MENU
-void Novel::UserMenu(int size, Novel arr[])
+void Novel::UserMenu(int& size, Novel*& arr)
 {
-	bool ex = false; int choice;
+	for (int i = 0; i < size; i++)
+	{
+		arr[i].chapters = HowManyChapters(arr[i]);
+	}
 	system("cls");
+	bool ex = false; int choice;
 	while (ex == false)
 	{
 		cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl << endl;
-		cout << "[[0] - Go back\n[1] - Find title by...\n[2] - Print all ranobe list" << endl;
+		cout << "[0] - Go back\n[1] - Find title by...\n[2] - Print all ranobe list" << endl;
 		cout << " (o_O)? "; cin >> choice;
 		switch (choice)
 		{
@@ -415,14 +678,18 @@ void Novel::UserMenu(int size, Novel arr[])
 		}
 	}
 }
-void Novel::AdminMenu(int size, Novel arr[])
+void Novel::AdminMenu(int& size, Novel*& arr)
 {
-	bool ex = false; int choice;
+	for (int i = 0; i < size; i++)
+	{
+		arr[i].chapters = HowManyChapters(arr[i]);
+	}
 	system("cls");
+	bool ex = false; int choice;
 	while (ex == false)
 	{
 		cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl << endl;
-		cout << "[[0] - Go back\n[1] - Find title by...\n[2] - Print all ranobe list\n[3] - Add new novel" << endl;
+		cout << "[0] - Go back\n[1] - Find title by...\n[2] - Print all ranobe list\n[3] - Add new novel" << endl;
 		cout << " (o_O)? "; cin >> choice;
 		switch (choice)
 		{
@@ -436,7 +703,8 @@ void Novel::AdminMenu(int size, Novel arr[])
 			PrintAll(size, arr); system("pause");
 			break;
 		case 3:
-			NewNovel(); break;
+			AddNovel(size, arr);
+			break;
 		default:
 			cout << "Wrong choice. Maybe you should try again?" << endl; system("pause");
 			break;
@@ -444,14 +712,18 @@ void Novel::AdminMenu(int size, Novel arr[])
 	}
 
 }
-void Novel::EditorMenu(int size, Novel arr[])
+void Novel::EditorMenu(int& size, Novel*& arr)
 {
-	bool ex = false; int choice;
+	for (int i = 0; i < size; i++)
+	{
+		arr[i].chapters = HowManyChapters(arr[i]);
+	}
 	system("cls");
+	bool ex = false; int choice;
 	while (ex == false)
 	{
 		cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl << endl;
-		cout << "[[0] - Go back\n[1] - Find title by...\n[2] - Print all ranobe list" << endl;
+		cout << "[0] - Go back\n[1] - Find title by...\n[2] - Print all ranobe list" << endl;
 		cout << " (o_O)? "; cin >> choice;
 		switch (choice)
 		{
@@ -472,10 +744,10 @@ void Novel::EditorMenu(int size, Novel arr[])
 }
 
 // "FIND TITLE" MENU
-void Novel::FindTitleByUserMenu(int size, Novel arr[])
+void Novel::FindTitleByUserMenu(int& size, Novel*& arr)
 {
 	int choice; int resultof = 0;
-	cout << "Find title by:\n[1] - Name\n[2] - Genres\n[3] - Rating\n[4] - Number of volumes\n[5] - number of chapters\n[6] - Age rating\n[0] - Go back" << endl;
+	cout << "Find title by:\n[1] - Name\n[2] - Genres\n[3] - Rating\n[4] - Number of volumes\n[5] - number of chapters\n[6] - Age rating\n[7] - Author\n[0] - Go back" << endl;
 	cout << " (o_O)? "; cin >> choice;
 	switch (choice)
 	{
@@ -504,15 +776,18 @@ void Novel::FindTitleByUserMenu(int size, Novel arr[])
 		resultof = AgeRatingSearch(size, arr);
 		resultof != -1 ? WorkWithNovelUser(size, arr, resultof) : void(0);
 		break;
+	case 7: // Author
+		resultof = AuthorSearch(size, arr);
+		resultof != -1 ? WorkWithNovelUser(size, arr, resultof) : void(0);
 	default:
 		cout << "Wrong choice. Maybe you should try again?" << endl; system("pause");
 		break;
 	}
 }
-void Novel::FindTitleByAdminMenu(int size, Novel arr[])
+void Novel::FindTitleByAdminMenu(int& size, Novel*& arr)
 {
 	int choice; int resultof = 0;
-	cout << "Find title by:\n[1] - Name\n[2] - Genres\n[3] - Rating\n[4] - Number of volumes\n[5] - number of chapters\n[6] - Age rating\n[0] - Go back" << endl;
+	cout << "Find title by:\n[1] - Name\n[2] - Genres\n[3] - Rating\n[4] - Number of volumes\n[5] - number of chapters\n[6] - Age rating\n[7] - Author\n[0] - Go back" << endl;
 	cout << " (o_O)? "; cin >> choice;
 	switch (choice)
 	{
@@ -541,15 +816,18 @@ void Novel::FindTitleByAdminMenu(int size, Novel arr[])
 		resultof = AgeRatingSearch(size, arr);
 		resultof != -1 ? WorkWithNovelAdmin(size, arr, resultof) : void(0);
 		break;
+	case 7: // Author
+		resultof = AuthorSearch(size, arr);
+		resultof != -1 ? WorkWithNovelUser(size, arr, resultof) : void(0);
 	default:
 		cout << "Wrong choice. Maybe you should try again?" << endl; system("pause");
 		break;
 	}
 }
-void Novel::FindTitleByEditorMenu(int size, Novel arr[])
+void Novel::FindTitleByEditorMenu(int& size, Novel*& arr)
 {
 	int choice; int resultof = 0;
-	cout << "Find title by:\n[1] - Name\n[2] - Genres\n[3] - Rating\n[4] - Number of volumes\n[5] - number of chapters\n[6] - Age rating\n[0] - Go back" << endl;
+	cout << "Find title by:\n[1] - Name\n[2] - Genres\n[3] - Rating\n[4] - Number of volumes\n[5] - number of chapters\n[6] - Age rating\n[7] - Author\n[0] - Go back" << endl;
 	cout << " (o_O)? "; cin >> choice;
 	switch (choice)
 	{
@@ -578,6 +856,9 @@ void Novel::FindTitleByEditorMenu(int size, Novel arr[])
 		resultof = AgeRatingSearch(size, arr);
 		resultof != -1 ? WorkWithNovelEditor(size, arr, resultof) : void(0);
 		break;
+	case 7: // Author
+		resultof = AuthorSearch(size, arr);
+		resultof != -1 ? WorkWithNovelUser(size, arr, resultof) : void(0);
 	default:
 		cout << "Wrong choice. Maybe you should try again?" << endl; system("pause");
 		break;
@@ -585,12 +866,12 @@ void Novel::FindTitleByEditorMenu(int size, Novel arr[])
 }
 
 // WORK WITH NOVEL MENU
-void Novel::WorkWithNovelUser(int size, Novel* arr, int i)
+void Novel::WorkWithNovelUser(int& size, Novel*& arr, int i)
 {
-	bool ex = false; int choice;
+	bool ex = false; int choice; string chapter; bool check = false;
 	while (ex == false)
 	{
-		cout << "[0] - Go back\n[1] - Chepters list" << endl;
+		cout << "[0] - Go back\n[1] - Chepters list\n[2] - Read" << endl;
 		cout << " (o_O)? "; cin >> choice;
 
 		switch (choice)
@@ -599,7 +880,13 @@ void Novel::WorkWithNovelUser(int size, Novel* arr, int i)
 			ex = true;
 			break;
 		case 1: // Chepters list
-
+			ChaptersPrint(arr[i].title);
+			break;
+		case 2: // Read
+			ChaptersPrint(arr[i].title);
+			cout << "Enter chepter name: "; cin >> chapter;
+			check = ChapterNameCheck(chapter, arr[i].title);
+			(check == true) ? ReadChapter(arr[i], chapter) : (void)printf("Wrong chapter name!\n");
 			break;
 		default:
 			cout << "Wrong choice. Maybe you should try again?" << endl; system("pause");
@@ -607,12 +894,12 @@ void Novel::WorkWithNovelUser(int size, Novel* arr, int i)
 		}
 	}
 }
-void Novel::WorkWithNovelAdmin(int size, Novel* arr, int i)
+void Novel::WorkWithNovelAdmin(int& size, Novel*& arr, int i)
 {
 	bool ex = false; int choice; bool check = false; string chapter;
 	while (ex == false)
 	{
-		cout << "[0] - Go back\n[1] - Chepters list\n[2] - Delete novel\n[3] - Change novel info\n[4] - Add new chepter\n[5] - Redact chepter" << endl;
+		cout << "[0] - Go back\n[1] - Chepters list\n[2] - Delete novel\n[3] - Change novel info\n[4] - Add new chepter\n[5] - Redact chepter\n[6] - Read" << endl;
 		cout << " (o_O)? "; cin >> choice;
 
 		switch (choice)
@@ -621,24 +908,29 @@ void Novel::WorkWithNovelAdmin(int size, Novel* arr, int i)
 			ex = true;
 			break;
 		case 1: // Chepters list
-
+			ChaptersPrint(arr[i].title);
 			break;
 		case 2: // Delete novel
-
-			ex = (check == false) ? (cout << "Ok! The changes will be visible after the next login to the program" << endl, true) : (cout << "Something went wrong! >:(" << endl, false);
+			check = DeleteNovel(arr[i]);
+			ex = (check == true) ? (cout << "Ok! The changes will be visible after the next login to the program" << endl, true) : (cout << "Something went wrong! >:(" << endl, false);
 			break;
 		case 3: // Change novel info
-			chapter = "NOVEL_INFO";
 			RewriteInfo(arr[i]);
-
 			break;
 		case 4: // Add new chepter
-
+			NewChapter(arr[i]);
 			break;
 		case 5: // Redact chepter
-
+			ChaptersPrint(arr[i].title);
 			cout << "Enter chepter name: "; cin >> chapter;
-
+			check = ChapterNameCheck(chapter, arr[i].title);
+			(check == true) ? RedactChapter(arr[i], chapter) : (void)printf("Wrong chapter name!\n");
+			break;
+		case 6: // Read
+			ChaptersPrint(arr[i].title);
+			cout << "Enter chepter name: "; cin >> chapter;
+			check = ChapterNameCheck(chapter, arr[i].title);
+			(check == true) ? ReadChapter(arr[i], chapter) : (void)printf("Wrong chapter name!\n");
 			break;
 		default:
 			cout << "Wrong choice. Maybe you should try again?" << endl; system("pause");
@@ -646,12 +938,12 @@ void Novel::WorkWithNovelAdmin(int size, Novel* arr, int i)
 		}
 	}
 }
-void Novel::WorkWithNovelEditor(int size, Novel* arr, int i)
+void Novel::WorkWithNovelEditor(int& size, Novel*& arr, int i)
 {
-	bool ex = false; int choice; string chapter;
+	bool ex = false; int choice; string chapter; bool check = false;
 	while (ex == false)
 	{
-		cout << "[0] - Go back\n[1] - Chepters list\n[2] - Add new chepter\n[3] - Redact chepter" << endl;
+		cout << "[0] - Go back\n[1] - Chepters list\n[2] - Add new chepter\n[3] - Redact chepter\n[4] - Read" << endl;
 		cout << " (o_O)? "; cin >> choice;
 
 		switch (choice)
@@ -660,15 +952,22 @@ void Novel::WorkWithNovelEditor(int size, Novel* arr, int i)
 			ex = true;
 			break;
 		case 1: // Chepters list
-
+			ChaptersPrint(arr[i].title);
 			break;
 		case 2: // Add new chepter
-
+			NewChapter(arr[i]);
 			break;
 		case 3: // Redact chepter
-
+			ChaptersPrint(arr[i].title);
 			cout << "Enter chepter name: "; cin >> chapter;
-
+			check = ChapterNameCheck(chapter, arr[i].title);
+			(check == true) ? RedactChapter(arr[i], chapter) : (void)printf("Wrong chapter name!\n");
+			break;
+		case 4: // Read
+			ChaptersPrint(arr[i].title);
+			cout << "Enter chepter name: "; cin >> chapter;
+			check = ChapterNameCheck(chapter, arr[i].title);
+			(check == true) ? ReadChapter(arr[i], chapter) : (void)printf("Wrong chapter name!\n");
 			break;
 		default:
 			cout << "Wrong choice. Maybe you should try again?" << endl; system("pause");
