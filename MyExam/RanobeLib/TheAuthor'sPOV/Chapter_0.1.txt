@@ -1,0 +1,290 @@
+Character stats (Spoiler)
+The Author's POV
+As per request, here are the character stats :
+
+P.S. do you want me to add descriptions?
+
+===Status===
+
+Name : Ren Dover
+
+Rank : E -
+
+Strength : E -
+
+Agility : F +
+
+Stamina : E -
+
+Intelligence : E -
+
+Mana capacity : E 
+
+
+Luck : E +
+
+Charm : G +
+
+--> Profession :
+
+[Swordsmanship lvl.2]
+
+The degree of understanding of the sword has evolved to the next level. User will find it easier to understand concepts that were previously harder to understand.
+
+--> Martial Manual :
+
+[★★★★★ Keiki style] - Minor realm of mastery
+
+Sword art created by Grandmaster Toshimoto Keiki. A five-star module that focused primarily on reaching the apex of swordsmanship and speed. Upon mastery, the sword art becomes so fast that before an opponent could even think about their next move, their heads would already be rolling on the ground.
+
+[★★★ Ring of vindication] - Minor realm of mastery
+
+Highly advanced sword art that creates a perfect ring of defense around the user. Upon mastery, the ring can create a three-dimensional sphere that protects the user from all sides. Because of the lack of offensive capabilities, the manual was graded three-stars.
+
+[★★★ Drifting steps]
+
+Movement art that progresses with each step. With every step taken, user speed will increase. Unless user stops, speed will continuously increase until the user either runs out of mana or due to injury.
+
+--> Skills :
+
+[{G} Monarch's indifference]
+
+A skill that enables users to erase all emotions, and act as a supreme monarch that only calculates the best option regardless of circumstance.
+
+==========
+
+===Status===
+
+Name : Kevin Voss
+
+Rank : D -
+
+Strength : D
+
+Agility : D -
+
+Stamina : D -
+
+Intelligence : D
+
+Mana capacity : E -
+
+Luck : E
+
+Charm : D +
+
+--> Profession :
+
+[Swordsmanship lvl.4]
+
+--> Martial Manual :
+
+[★★★★ Everlasting sunset] - Greater realm of mastery
+
+Sword art primarily focused on creating faints and hiding true sword intent. By creating multiple illusions of sword art, the enemy will find it harder to defend as the true attack will always be masked under multiple faints.
+
+[★★★ Sky steps] - Minor realm of mastery
+
+Movement art that considerably increases user agility. Upon reaching a certain level of mastery, stepping on the air is possible.
+
+--> Skills :
+
+[{E} Overdrive]
+
+A skill that enables user to push bodily functions to the extreme. For one minute, the user can exhibit power that is double of original user strength. User will also find their other stats increasing considerably. After usage of skill, user will experience extreme fatigue making it hard for them to focus and carry out ordinary tasks for the next few hours.
+
+[{F} Mind cleansing]
+
+Increases user computational and analytical ability for a short period of time. Can't be used for a prolonged period of time due to the risk of possible brain trauma.
+
+[{F} Mana coating]
+
+A skill that enables user to replenish mana more quickly by expanding the pores on the human body.
+
+==========
+
+===Status===
+
+Name : Jin Horton
+
+Rank : E
+
+Strength : E-
+
+Agility : E +
+
+Stamina : E
+
+Intelligence : E
+
+Mana capacity : E -
+
+Luck : E
+
+Charm : D +
+
+--> Profession :
+
+[Assassin lvl.3]
+
+--> Martial Manual :
+
+[★★★★ Shadow harvester] - Greater realm of mastery
+
+Dagger art primarily focused on lightning-fast attacks that slice through the air at astonishing speeds. The greater the mastery, the faster each swing becomes making each attack harder to defend against.
+
+[★★★★ Void link] - Minor realm of mastery
+
+Movement art that enables user to momentarily move between shadows. The greater the mastery, the longer the user can travel between shadows. Speed of user inside of shadow is tripled, and when exiting the shadow, user speed will be considerably boosted for a couple of seconds.
+
+--> Skills :
+
+[{E} Mana conglomoration]
+
+A skill that enables user to gather all of their mana into a singular point and letting it explode in one swift attack that multiplies the attack power of the attack by a factor of ten.
+
+[{F} Light eye]
+
+A skill that stimulates the neurons located in the eyes, enabling the user to enhance their vision. From being able to see further away, to being able to see at night and being able to slow down the world around him. Light eye enables user to enhance ocular functions.
+
+==========
+
+===Status===
+
+Name : Amanda Stern
+
+Rank : ???
+
+Strength : ???
+
+Agility : ???
+
+Stamina : ???
+
+Intelligence : ???
+
+Mana capacity : ???
+
+Luck : ???
+
+Charm : ???
+
+--> Profession :
+
+[???]
+
+--> Martial Manual :
+
+[???]
+
+???
+
+[???]
+
+???
+
+--> Skills :
+
+[{?} ???]
+
+???
+
+[{?} ???]
+
+???
+
+==========
+
+===Status===
+
+Name : Melissa Hall
+
+Rank : ???
+
+Strength : ???
+
+Agility : ???
+
+Stamina : ???
+
+Intelligence : ???
+
+Mana capacity : ???
+
+Luck : ???
+
+Charm : ???
+
+--> Profession :
+
+[???]
+
+--> Martial Manual :
+
+[???]
+
+???
+
+[???]
+
+???
+
+--> Skills :
+
+[{?} ???]
+
+???
+
+[{?} ???]
+
+???
+
+==========
+
+===Status===
+
+Name : Emma Roshfield
+
+Rank : ???
+
+Strength : ???
+
+Agility : ???
+
+Stamina : ???
+
+Intelligence : ???
+
+Mana capacity : ???
+
+Luck : ???
+
+Charm : ???
+
+--> Profession :
+
+[???]
+
+--> Martial Manual :
+
+[???]
+
+???
+
+[???]
+
+???
+
+--> Skills :
+
+
+[{?} ???]
+
+???
+
+[{?} ???]
+
+???
+
+==========
+

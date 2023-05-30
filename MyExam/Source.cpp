@@ -8,7 +8,7 @@
 #include"PERSON.h"
 #include"NOVEL.h"
 
-#define MyDebug
+//#define MyDebug
 
 using namespace std;
 
@@ -315,7 +315,6 @@ Person* ReadFromFile(const string& filename, int& size)
         file.ignore();
     }
 
-//////////////////////////////////////////////
 #ifdef MyDebug
     for (int i = 0; i < size; i++)
     {
@@ -327,9 +326,7 @@ Person* ReadFromFile(const string& filename, int& size)
         cout << "ID ~ " << data[i].ID << endl;
         cout << "accessLevel ~ " << data[i].accessLevel << endl;
     }
-//////////////////////////////////////////////
-
-    system("pause");
+    system("pause"); system("cls");
 #endif // MyDebug
 
     file.close(); return data;
@@ -351,6 +348,7 @@ void WriteToFile(const string& filename, Person* arr, int size)
         file << arr[i].ID << endl;
         file << arr[i].accessLevel << endl;
     }
+    system("pause"); system("cls");
     file.close();
 }
 

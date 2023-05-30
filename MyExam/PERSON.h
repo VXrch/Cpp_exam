@@ -19,12 +19,13 @@ struct Person
 	int PrintAll(int size, Person arr[]);
 	int Check(int size, Person arr[]);
 
-	void Rewrite(int size, Person arr[], Person& WhoIAm, int WhatToDo = 0);
+	void Rewrite(int& size, Person*& arr, Person& WhoIAm, int WhatToDo = 0);
+	void DeletePerson(int& size, Person*& arr, Person& WhoIAm, int who);
 	void AddPerson(int& size, Person*& arr, Person& WhoIAm);
 	void Register(int& size, Person*& arr, Person& WhoIAm);
 
-	int ProfileMenuAdmin(int size, Person arr[], Person& WhoIAm);
-	int ProfileMenuUser(int size, Person arr[], Person& WhoIAm);
+	int ProfileMenuAdmin(int& size, Person*& arr, Person& WhoIAm);
+	int ProfileMenuUser(int& size, Person*& arr, Person& WhoIAm);
 
 	int FindUser(int size, Person arr[]);
 	int FindEditor(int size, Person arr[]);

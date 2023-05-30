@@ -75,7 +75,7 @@ int Person::Check(int size, Person arr[])
 	return -1;
 }
 
-void Person::Rewrite(int size, Person arr[], Person& WhoIAm, int WhatToDo)
+void Person::Rewrite(int& size, Person*& arr, Person& WhoIAm, int WhatToDo)
 {
 	char ch; int option; bool ex = false; bool check = false; string newUsername; bool ext;
 	if (WhatToDo == 0)
@@ -183,6 +183,49 @@ void Person::Rewrite(int size, Person arr[], Person& WhoIAm, int WhatToDo)
 		}
 		WhoIAm = arr[iterator];
 	}
+	else
+	{
+		cout << "___---___---___---___---___---___---___" << endl;
+		cout << "What do you want to change?\n[0] - Go back\n[1] - Name\n[2] - Email\n[3] - Username\n[4] - Password\n" << endl;
+		cout << "Your choice  (/`^_^)/'  "; cin >> option;
+		cout << "___---___---___---___---___---___---___" << endl;
+
+		int iterator = 0;
+		for (int i = 0; i < size; i++)
+		{
+			if (WhatToDo == arr[i].ID)
+			{
+				iterator = i;
+			}
+		}
+		switch (option)
+		{
+		case 0: ex = true; break;
+		case 1: // name
+			cout << "Enter new name: "; cin >> arr[iterator].name;
+			cout << "___---___---___---___---___---___---___" << endl;
+			ex = true; system("pause"); system("cls");
+			break;
+		case 2: // email
+			cout << "Enter new email: "; cin >> arr[iterator].email;
+			cout << "___---___---___---___---___---___---___" << endl;
+			ex = true; system("pause"); system("cls");
+			break;
+		case 3: // username
+			cout << "Enter new username: "; cin >> arr[iterator].username;
+			cout << "___---___---___---___---___---___---___" << endl;
+			ex = true; system("pause"); system("cls");
+			break;
+		case 4: // password
+			cout << "Enter new password: "; cin >> arr[iterator].password;
+			cout << "___---___---___---___---___---___---___" << endl;
+			ex = true; system("pause"); system("cls");
+			break;
+		default:
+			cout << "You entered a wrong number! ._(°w°)_." << endl; system("pause"); system("cls");
+			break;
+		}
+	}
 }
 
 void Person::AddPerson(int& size, Person*& arr, Person& WhoIAm)
@@ -208,6 +251,30 @@ void Person::AddPerson(int& size, Person*& arr, Person& WhoIAm)
 	delete[] arr;
 	arr = temparr;
 	size++;
+}
+
+void Person::DeletePerson(int& size, Person*& arr, Person& WhoIAm, int who)
+{
+	if (who != WhoIAm.ID)
+	{
+		Person* temparr = new Person[size - 1];
+
+		for (int i = 0; i < size; i++)
+		{
+			if (arr[i].ID != who)
+			{
+				temparr[i] = arr[i];
+			}
+		}
+
+		delete[]arr;
+		arr = temparr;
+		size--;
+	}
+	else
+	{
+		cout << "You can't delete your profile!" << endl;
+	}
 }
 
 void Person::Register(int& size, Person*& arr, Person& WhoIAm)
@@ -237,12 +304,12 @@ void Person::Register(int& size, Person*& arr, Person& WhoIAm)
 	size++;
 }
 
-int Person::ProfileMenuAdmin(int size, Person arr[], Person& WhoIAm)
+int Person::ProfileMenuAdmin(int& size, Person*& arr, Person& WhoIAm)
 {
 	bool ex = false;
 	while (ex == false)
 	{
-		int choice; Person temp;
+		int choice; Person temp; int who;
 		system("cls");
 		cout << "__--__--__--__--__--__--__--__--__--__--__--__" << endl;
 		WhoIAm.Print();
@@ -258,23 +325,61 @@ int Person::ProfileMenuAdmin(int size, Person arr[], Person& WhoIAm)
 			break;
 		case 2: // Find user
 			int ch; system("cls");
-			cout << "[1] - Show the whole list\n[2] - Find a user\n[3] - Find an editor\n[4] - Find an administrator\n[5] - Go back" << endl;
+			cout << "[1] - Show the whole list\n[2] - Find a user\n[3] - Find an editor\n[4] - Find an administrator\n[0] - Go back" << endl;
 			cout << " (o_O)? "; cin >> ch;
 			switch (ch)
 			{
 			case 1: // Show the whole list
-				temp.PrintAll(size, arr);
+				who = PrintAll(size, arr);
+				if (who != -1)
+				{
+					cout << "[1] - Change profile\n[2] - Delete profile\n[0] - Go back" << endl;
+						cout << " (o_O)? "; cin >> choice;
+					switch (choice)
+					{
+					case 0: break;
+					case 1: Rewrite(size, arr, WhoIAm, who); break;
+					case 2: DeletePerson(size, arr, WhoIAm, who); break;
+					default: cout << "Wrong choice!" << endl; break;
+					}
+				}
 				break;
 			case 2: // Find a user
-				temp.FindUser(size, arr);
+				who = FindUser(size, arr);
+				if (who != -1)
+				{
+					cout << "[1] - Change profile\n[2] - Delete profile\n[0] - Go back" << endl;
+					cout << " (o_O)? "; cin >> choice;
+					switch (choice)
+					{
+					case 0: break;
+					case 1: Rewrite(size, arr, WhoIAm, who); break;
+					case 2: DeletePerson(size, arr, WhoIAm, who); break;
+					default: cout << "Wrong choice!" << endl; break;
+					}
+				}
 				break;
 			case 3: // Find an editor
-				temp.FindEditor(size, arr);
+				who = FindEditor(size, arr);
+				switch (choice)
+				{
+				case 0: break;
+				case 1: Rewrite(size, arr, WhoIAm, who); break;
+				case 2: DeletePerson(size, arr, WhoIAm, who); break;
+				default: cout << "Wrong choice!" << endl; break;
+				}
 				break;
 			case 4: // Find an administrator
-				temp.FindAdmin(size, arr);
+				who = FindAdmin(size, arr);
+				switch (choice)
+				{
+				case 0: break;
+				case 1: Rewrite(size, arr, WhoIAm, who); break;
+				case 2: DeletePerson(size, arr, WhoIAm, who); break;
+				default: cout << "Wrong choice!" << endl; break;
+				}
 				break;
-			case 5: // Go back
+			case 0: // Go back
 				system("cls"); ex = true;
 				break;
 			default:
@@ -291,7 +396,7 @@ int Person::ProfileMenuAdmin(int size, Person arr[], Person& WhoIAm)
 		}
 	}
 }
-int Person::ProfileMenuUser(int size, Person arr[], Person& WhoIAm)
+int Person::ProfileMenuUser(int& size, Person*& arr, Person& WhoIAm)
 {
 	bool ex = false;
 	while (ex == false)
